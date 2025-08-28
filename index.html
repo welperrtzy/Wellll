@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncChat - Sinkronisasi Antar Perangkat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00C853;
+            --primary-dark: #009624;
+            --secondary: #212121;
+            --accent: #FF4081;
+            --light: #f9f9f9;
+            --gray: #757575;
+            --dark: #121212;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(18, 18, 18, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 200, 83, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .device-id {
+            background: rgba(0, 200, 83, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: rgba(18, 18, 18, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 200, 83, 0.15);
+            animation: fadeIn 0.6s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.8rem;
+            font-family: 'Montserrat', sans-serif;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 200, 83, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(0, 200, 83, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: rgba(33, 33, 33, 0.6);
+            color: var(--light);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 200, 83, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 200, 83, 0.1);
+        }
+
+        .btn-sm {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .admin-link {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .admin-link:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.5);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 30px;
+            background: rgba(18, 18, 18, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Admin Page Styles */
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: none;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(18, 18, 18, 0.8);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .admin-title {
+            font-size: 2.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+        }
+
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .question-card {
+            background: rgba(33, 33, 33, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .love-btn {
+            background: none;
+            border: none;
+            color: #ddd;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .love-btn:hover {
+            color: var(--accent);
+            transform: scale(1.2);
+        }
+
+        .love-btn.loved {
+            color: var(--accent);
+        }
+
+        .question-content {
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .question-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sync-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0, 200, 83, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .last-sync {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Chat Page -->
+    <div id="mainPage">
+        <header>
+            <h1 class="main-title">MAU REQ APA NIH</h1>
+            <p class="subtitle">Sampaikan request atau pertanyaan Anda di sini, dan admin akan melihatnya</p>
+            <div class="device-id">
+                <i class="fas fa-mobile-alt"></i>
+                ID Perangkat: <span id="deviceId"></span>
+            </div>
+        </header>
+        
+        <div class="container">
+            <section class="card">
+                <h2><i class="fas fa-edit"></i> Form Request</h2>
+                <form id="requestForm">
+                    <div class="form-group">
+                        <label for="userName"><i class="fas fa-user"></i> Nama Anda</label>
+                        <input type="text" id="userName" class="form-control" placeholder="Masukkan nama Anda" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userRequest"><i class="fas fa-comment"></i> Request / Pertanyaan</label>
+                        <textarea id="userRequest" class="form-control" placeholder="Tulis request atau pertanyaan Anda untuk Aa WELPER di sini..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-block pulse">
+                        <i class="fas fa-paper-plane"></i> Kirim Request
+                    </button>
+                </form>
+
+                <div class="sync-info">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Pertanyaan akan tersinkronisasi di semua perangkat</span>
+                </div>
+
+                <div class="last-sync">
+                    <i class="fas fa-clock"></i>
+                    Terakhir sinkron: <span id="lastSync">-</span>
+                </div>
+            </section>
+        </div>
+        
+        <a href="#" class="admin-link" id="adminIcon">
+            <i class="fas fa-lock"></i>
+        </a>
+        
+        <footer>
+            <p>© SC WELLL/p>
+        </footer>
+    </div>
+
+    <!-- Admin Login Page -->
+    <div id="adminPage" class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title"><i class="fas fa-lock"></i> Admin Login</h1>
+            <a href="#" class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Kembali</a>
+        </div>
+        
+        <div class="card">
+            <h2><i class="fas fa-sign-in-alt"></i> Masuk ke Admin Panel</h2>
+            <form id="adminForm" class="login-form">
+                <div class="form-group">
+                    <label for="adminUsername"><i class="fas fa-user-shield"></i> Username</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="Masukkan username admin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fas fa-key"></i> Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Masukkan password admin" required>
+                </div>
+                
+                <button type="submit" class="btn btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Page -->
+    <div id="adminDashboard" class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <div>
+                <button class="btn btn-sm btn-outline" id="syncNowBtn">
+                    <i class="fas fa-sync"></i> Sinkronisasi
+                </button>
+                <a href="#" class="back-btn" id="dashboardBackBtn"><i class="fas fa-arrow-left"></i> Kembali</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2><i class="fas fa-list"></i> Daftar Request</h2>
+            <div class="last-sync">
+                <i class="fas fa-clock"></i>
+                Terakhir sinkron: <span id="adminLastSync">-</span>
+            </div>
+            <div id="requestsContainer" class="questions-grid">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">Request berhasil dikirim!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const mainPage = document.getElementById('mainPage');
+            const adminPage = document.getElementById('adminPage');
+            const adminDashboard = document.getElementById('adminDashboard');
+            const adminIcon = document.getElementById('adminIcon');
+            const backBtn = document.getElementById('backBtn');
+            const dashboardBackBtn = document.getElementById('dashboardBackBtn');
+            const requestForm = document.getElementById('requestForm');
+            const adminForm = document.getElementById('adminForm');
+            const notification = document.getElementById('notification');
+            const deviceIdEl = document.getElementById('deviceId');
+            const lastSyncEl = document.getElementById('lastSync');
+            const adminLastSyncEl = document.getElementById('adminLastSync');
+            const syncNowBtn = document.getElementById('syncNowBtn');
+            
+            // Generate unique device ID
+            let deviceId = localStorage.getItem('deviceId');
+            if (!deviceId) {
+                deviceId = 'DEV-' + Math.floor(1000 + Math.random() * 9000);
+                localStorage.setItem('deviceId', deviceId);
+            }
+            deviceIdEl.textContent = deviceId;
+            
+            // Initialize requests
+            let requests = JSON.parse(localStorage.getItem('userRequests')) || [];
+            updateLastSync();
+            
+            // Show notification
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Update last sync time
+            function updateLastSync() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('id-ID');
+                const dateString = now.toLocaleDateString('id-ID');
+                const syncText = `${dateString} ${timeString}`;
+                
+                lastSyncEl.textContent = syncText;
+                if (adminLastSyncEl) adminLastSyncEl.textContent = syncText;
+                
+                localStorage.setItem('lastSync', syncText);
+            }
+            
+            // Navigate to admin page
+            adminIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                mainPage.style.display = 'none';
+                adminPage.style.display = 'flex';
+            });
+            
+            // Back to main page
+            backBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                adminPage.style.display = 'none';
+                mainPage.style.display = 'block';
+            });
+            
+            // Back from dashboard to admin page
+            dashboardBackBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                adminDashboard.style.display = 'none';
+                adminPage.style.display = 'flex';
+            });
+            
+            // Handle request form submission
+            requestForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('userName').value;
+                const requestText = document.getElementById('userRequest').value;
+                
+                if (name && requestText) {
+                    // Add request to array
+                    const newRequest = {
+                        id: Date.now(),
+                        name,
+                        request: requestText,
+                        date: new Date().toLocaleString('id-ID'),
+                        loved: false,
+                        device: deviceId
+                    };
+                    
+                    requests.push(newRequest);
+                    
+                    // Save to localStorage
+                    localStorage.setItem('userRequests', JSON.stringify(requests));
+                    updateLastSync();
+                    
+                    // Reset form
+                    requestForm.reset();
+                    
+                    // Show notification
+                    showNotification('Request berhasil dikirim!');
+                }
+            });
+            
+            // Handle admin form submission
+            adminForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('adminUsername').value;
+                const password = document.getElementById('adminPassword').value;
+                
+                // Simple authentication
+                if (username === 'admin' && password === 'admin123') {
+                    // Show dashboard
+                    adminPage.style.display = 'none';
+                    adminDashboard.style.display = 'flex';
+                    
+                    // Load requests
+                    loadRequests();
+                } else {
+                    showNotification('Login gagal. Periksa username dan password!');
+                }
+            });
+            
+            // Manual sync button
+            syncNowBtn.addEventListener('click', function() {
+                requests = JSON.parse(localStorage.getItem('userRequests')) || [];
+                loadRequests();
+                updateLastSync();
+                showNotification('Data berhasil disinkronisasi!');
+            });
+            
+            // Load requests to dashboard
+            function loadRequests() {
+                const container = document.getElementById('requestsContainer');
+                container.innerHTML = '';
+                
+                // Get updated requests from localStorage
+                requests = JSON.parse(localStorage.getItem('userRequests')) || [];
+                
+                if (requests.length === 0) {
+                    container.innerHTML = '<p style="color: #888; text-align: center; padding: 20px; grid-column: 1 / -1;">Belum ada request.</p>';
+                    return;
+                }
+                
+                // Show requests (newest first)
+                requests.slice().reverse().forEach(req => {
+                    const firstLetter = req.name.charAt(0).toUpperCase();
+                    
+                    const requestCard = document.createElement('div');
+                    requestCard.className = 'question-card';
+                    requestCard.innerHTML = `
+                        <div class="question-header">
+                            <div class="user-info">
+                                <div class="user-avatar">${firstLetter}</div>
+                                <div>
+                                    <strong>${req.name}</strong>
+                                    <div style="font-size: 0.7rem; color: #888;">${req.device}</div>
+                                </div>
+                            </div>
+                            <button class="love-btn ${req.loved ? 'loved' : ''}" data-id="${req.id}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="question-content">${req.request}</div>
+                        <div class="question-date"><i class="fas fa-clock"></i> ${req.date}</div>
+                    `;
+                    
+                    container.appendChild(requestCard);
+                });
+                
+                // Add event listeners to love buttons
+                document.querySelectorAll('.love-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        const requestIndex = requests.findIndex(r => r.id === id);
+                        
+                        if (requestIndex !== -1) {
+                            requests[requestIndex].loved = !requests[requestIndex].loved;
+                            localStorage.setItem('userRequests', JSON.stringify(requests));
+                            
+                            this.classList.toggle('loved');
+                        }
+                    });
+                });
+            }
+            
+            // Simulate periodic sync (every 30 seconds)
+            setInterval(function() {
+                requests = JSON.parse(localStorage.getItem('userRequests')) || [];
+                if (adminDashboard.style.display === 'flex') {
+                    loadRequests();
+                }
+                updateLastSync();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
